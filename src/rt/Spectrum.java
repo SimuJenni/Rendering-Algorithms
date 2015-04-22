@@ -88,4 +88,5 @@ public class Spectrum {
 		g = g+s;
 		b = b+s;		
 	}
+	
 }

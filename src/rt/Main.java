@@ -10,6 +10,7 @@ import rt.testscenes.CameraTestScene;
 import rt.testscenes.GlossySphere;
 import rt.testscenes.InstancingTeapots;
 import rt.testscenes.InstancingTest;
+import rt.testscenes.PathtracingBoxSphere;
 import rt.testscenes.RefractiveSphere;
 
 import java.util.*;
@@ -42,9 +43,10 @@ public class Main {
 //	public static Scene scene = new CSGScene();
 //	public static Scene scene = new RefractiveSphere();
 //	public static Scene scene = new teapot();
-	public static Scene scene = new spheresEverywhere();
+//	public static Scene scene = new spheresEverywhere();
 //	public static Scene scene = new AreaLight();
 //	public static Scene scene = new GlossySphere();
+	public static Scene scene = new PathtracingBoxSphere();
 
 	/**
 	 * A render task represents a rectangular image region that is rendered

@@ -9,7 +9,7 @@ public class PathTracingIntegratorFactory implements IntegratorFactory {
 	@Override
 	public Integrator make(Scene scene) {
 		// TODO Auto-generated method stub
-		return null;
+		return new PathTracingIntegrator(scene);
 	}
 
 	@Override
