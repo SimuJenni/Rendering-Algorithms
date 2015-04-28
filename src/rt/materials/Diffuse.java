@@ -23,7 +23,7 @@ public class Diffuse implements Material {
 	{
 		this.kd = new Spectrum(kd);
 		// Normalize
-		this.kd.mult(1/(float)Math.PI);
+		this.kd.mult(new Spectrum(1/(float)Math.PI));
 	}
 	
 	/**
@@ -42,12 +42,6 @@ public class Diffuse implements Material {
 	 *  @param hitRecord hit record to be used
 	 */
 	public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut, Vector3f wIn) {
-		// Multiply with cosine of surface normal and incident direction
-		
-//		float ndotl = hitRecord.normal.dot(wIn);
-//		ndotl = Math.max(ndotl, 0.f);
-//		Spectrum diff=new Spectrum(kd);
-//		diff.mult(ndotl);
 		return new Spectrum(kd);
 	}
 
@@ -82,7 +76,7 @@ public class Diffuse implements Material {
 				(float)Math.sin(psi2)*psi1,(float)Math.sqrt(1-sample[0]));
 		dir=hitRecord.transformToTangentSpace(dir);
 		dir.normalize();
-		float p=(float) (dir.dot(hitRecord.normal)/Math.PI);
+		float p=(float) Math.abs((dir.dot(hitRecord.normal)/Math.PI));
 		Spectrum brdf=evaluateBRDF(hitRecord,hitRecord.getNormalizedDirection(),dir);
 	
 		return new ShadingSample(brdf,new Spectrum(0.f, 0.f, 0.f),dir,hasSpecularReflection(),p);	

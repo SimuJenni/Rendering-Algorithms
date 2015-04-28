@@ -15,6 +15,8 @@ import rt.Scene;
 import rt.Spectrum;
 import rt.StaticVecmath;
 import rt.Material.ShadingSample;
+import rt.lightsources.RectangleLight;
+import rt.materials.AreaLightMaterial;
 import rt.samplers.RandomSampler;
 
 public class PathTracingIntegrator implements Integrator {
@@ -33,19 +35,25 @@ public class PathTracingIntegrator implements Integrator {
 	public Spectrum integrate(Ray r) {
 
 		HitRecord hitRecord = root.intersect(r);
-		// immediately return background color if nothing was hit
-		if(hitRecord == null) { 
-			return new Spectrum(0,0,0);
-		}	
 		Spectrum color = new Spectrum(0,0,0);	
 		Spectrum alpha = new Spectrum(1,1,1);
+		
+		if (hitRecord == null){
+			return new Spectrum();
+		}
+		
+		if(hitRecord.material instanceof AreaLightMaterial){
+			return hitRecord.material.evaluateEmission(hitRecord, hitRecord.w);
+		}
+		
 		int k=0;
 		LightGeometry light=lightList.getRandomLight();
 		float p_w=1.f/lightList.size();
 		
 		while(true){
-			if(hitRecord==null)
+			if(hitRecord==null||hitRecord.material instanceof AreaLightMaterial)
 				break;
+						
 			float[][] samples=sampler.makeSamples(2, 2);
 			HitRecord lightSample=light.sample(samples[0]);
 			Vector3f lightDir = new Vector3f(lightSample.position);
@@ -54,12 +62,12 @@ public class PathTracingIntegrator implements Integrator {
 			lightSample.w.normalize();
 			lightSample.w.negate();
 			float cosTheta=lightSample.normal.dot(lightSample.w);
-			p_w=p_w*lightSample.p*lightDir.lengthSquared()*cosTheta;
+			p_w=lightSample.p*lightDir.lengthSquared()/cosTheta;
 			lightDir.normalize();
 			Spectrum shadeLight=hitRecord.material.evaluateBRDF(hitRecord, hitRecord.w, lightDir);
-			shadeLight.mult(lightSample.material.evaluateEmission(hitRecord, lightSample.w));
+			shadeLight.mult(lightSample.material.evaluateEmission(lightSample, lightSample.w));
 			shadeLight.divide(p_w);
-			shadeLight.mult(hitRecord.normal.dot(lightDir));
+			shadeLight.mult(new Spectrum(hitRecord.normal.dot(lightDir)));
 			shadeLight.mult(alpha);
 			color.add(shadeLight);
 			float q=russionRouletteStop(k);
@@ -71,7 +79,7 @@ public class PathTracingIntegrator implements Integrator {
 			Spectrum brdf=hitRecord.material.evaluateBRDF(hitRecord, hitRecord.w, sampleDir);
 			float cos=sampleDir.dot(hitRecord.normal);
 			alpha.mult(brdf);
-			alpha.mult(cos/(s.p*(1-q)));
+			alpha.mult(new Spectrum(cos/(s.p*(1-q))));
 			k++;
 			hitRecord=root.intersect(newRay);
 		}

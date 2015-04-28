@@ -28,6 +28,11 @@ public class Spectrum {
 		this.b = s.b;
 	}
 	
+	public Spectrum(float f) {
+		this.r = f;
+		this.g = f;
+		this.b = f;	}
+
 	public void mult(float t)
 	{
 		r = r*t;

@@ -36,6 +36,7 @@ public class Rectangle implements Intersectable {
 		HitRecord hit=this.plane.intersect(r);
 		if(hit==null)
 			return null;
+		hit.material=this.material;
 		if(isOnRectangle(hit.position))
 			return hit;
 		else
