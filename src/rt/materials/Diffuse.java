@@ -88,11 +88,17 @@ public class Diffuse implements Material {
 	}
 	
 	public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
-		return new Spectrum(0.f, 0.f, 0.f);
+		return null;
 	}
 
 	public ShadingSample getEmissionSample(HitRecord hitRecord, float[] sample) {
 		return null;
 	}
-	
+
+	@Override
+	public float getPobability(Vector3f inDir, Vector3f outDir, Vector3f normal) {
+		// TODO Auto-generated method stub
+		return (float) Math.abs((outDir.dot(normal)/Math.PI));
+	}
+
 }

@@ -1,5 +1,6 @@
 package rt.intersectables;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import rt.HitRecord;
@@ -7,6 +8,7 @@ import rt.Intersectable;
 import rt.Material;
 import rt.Ray;
 import rt.Spectrum;
+import rt.StaticVecmath;
 import rt.accelerator.BoundingBox;
 import rt.materials.Diffuse;
 
@@ -29,6 +31,10 @@ public class Rectangle implements Intersectable {
 		width=right.length();
 		height=top.length();
 		material=new Diffuse();
+	}
+
+	public Rectangle(Point3f point1, Point3f point2, Point3f point3) {
+		this(new Vector3f(point1), StaticVecmath.sub(point2, point1), StaticVecmath.sub(point3, point1));
 	}
 
 	@Override

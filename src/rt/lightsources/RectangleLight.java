@@ -56,6 +56,7 @@ public class RectangleLight implements LightGeometry {
 		hitRecord.position = new Vector3f(sample);
 		hitRecord.material = areaLightMaterial;
 		hitRecord.normal = rectangle.getNormal();
+		hitRecord.normal.normalize();
 		hitRecord.p = 1.f/rectangle.getArea();
 		return hitRecord;
 	}

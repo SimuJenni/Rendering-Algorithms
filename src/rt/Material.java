@@ -123,4 +123,6 @@ public interface Material {
 	 * Indicate whether the material casts shadows or not. 
 	 */
 	public boolean castsShadows();
+
+	public float getPobability(Vector3f sampleDir, Vector3f w, Vector3f normal);
 }

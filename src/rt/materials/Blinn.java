@@ -88,4 +88,11 @@ public class Blinn implements Material {
 		return true;
 	}
 
+	@Override
+	public float getPobability(Vector3f sampleDir, Vector3f w, Vector3f normal) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
 }

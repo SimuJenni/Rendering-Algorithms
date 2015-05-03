@@ -7,6 +7,7 @@ import rt.testscenes.AreaLight;
 import rt.testscenes.Blinn;
 import rt.testscenes.CSGScene;
 import rt.testscenes.CameraTestScene;
+import rt.testscenes.CornellBox;
 import rt.testscenes.GlossySphere;
 import rt.testscenes.InstancingTeapots;
 import rt.testscenes.InstancingTest;
@@ -47,6 +48,8 @@ public class Main {
 //	public static Scene scene = new AreaLight();
 //	public static Scene scene = new GlossySphere();
 	public static Scene scene = new PathtracingBoxSphere();
+//	public static Scene scene = new CornellBox();
+
 
 	/**
 	 * A render task represents a rectangular image region that is rendered

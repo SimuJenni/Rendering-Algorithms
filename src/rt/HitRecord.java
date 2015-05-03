@@ -72,6 +72,10 @@ public class HitRecord  {
 		this.u = u;
 		this.v = v;
 		
+		makeTangentFrame(normal);
+	}
+
+	public void makeTangentFrame(Vector3f normal) {
 		// Make tangent frame: t1, t2, normal is a right handed frame
 		t1 = new Vector3f(1,0,0);
 		t1.cross(t1, normal);

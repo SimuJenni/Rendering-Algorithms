@@ -7,12 +7,14 @@ import javax.vecmath.Vector4f;
 
 import rt.HitRecord;
 import rt.Intersectable;
+import rt.Material;
 import rt.Ray;
 import rt.accelerator.BoundingBox;
 
 public class Instance implements Intersectable {
 	private Intersectable object;
 	private Matrix4f M, M_inv, M_inv_transp;
+	public Material material;
 	
 	public Instance(Intersectable object, Matrix4f m) {
 		super();
@@ -30,6 +32,7 @@ public class Instance implements Intersectable {
 		Ray newRay=transformRay(r);
 		HitRecord hit=this.object.intersect(newRay);
 		if(hit!=null){
+			hit.material=this.material;
 			return transformHit(hit);
 		}
 		else

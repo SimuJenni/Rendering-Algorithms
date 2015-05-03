@@ -151,4 +151,10 @@ public class Glossy implements Material {
 		return true;
 	}
 
+	@Override
+	public float getPobability(Vector3f inDir, Vector3f outDir, Vector3f normal) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

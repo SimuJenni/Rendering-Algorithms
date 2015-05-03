@@ -26,10 +26,7 @@ public class AreaLightMaterial implements Material {
 	}
 
 	public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
-		if(wOut==null||hitRecord.normal.dot(wOut)<0)
-			return new Spectrum();
-		else
-			return new Spectrum(emission);
+		return new Spectrum(emission);
 	}
 
 	@Override
@@ -68,15 +65,26 @@ public class AreaLightMaterial implements Material {
 		dir=hitRecord.transformToTangentSpace(dir);
 		dir.normalize();
 		float p=(float) (dir.dot(hitRecord.normal)/Math.PI);
-		Spectrum brdf=evaluateBRDF(hitRecord,hitRecord.getNormalizedDirection(),dir);
+		Spectrum brdf=new Spectrum();
 	
 		return new ShadingSample(brdf,new Spectrum(0.f, 0.f, 0.f),dir,hasSpecularReflection(),p);
 	}
 
 	@Override
 	public ShadingSample getEmissionSample(HitRecord hitRecord, float[] sample) {
-		// TODO Auto-generated method stub
-		return new ShadingSample();
+		float psi1=sample[0];
+		float psi2=sample[1];
+		psi1=(float) Math.sqrt(psi1);
+		psi2=(float) (Math.PI*2*psi2);
+		
+		Vector3f dir=new Vector3f((float)Math.cos(psi2)*psi1,
+				(float)Math.sin(psi2)*psi1,(float)Math.sqrt(1-sample[0]));
+		dir=hitRecord.transformToTangentSpace(dir);
+		dir.normalize();
+		float p=(float) (dir.dot(hitRecord.normal)/Math.PI);
+		Spectrum brdf=new Spectrum();
+	
+		return new ShadingSample(brdf,evaluateEmission(hitRecord,dir),dir,hasSpecularReflection(),p);
 	}
 
 	@Override
@@ -85,4 +93,9 @@ public class AreaLightMaterial implements Material {
 		return true;
 	}
 
+	@Override
+	public float getPobability(Vector3f inDir, Vector3f outDir, Vector3f normal) {
+		// TODO Auto-generated method stub
+		return (float) Math.abs((outDir.dot(normal)/Math.PI));
+	}
 }

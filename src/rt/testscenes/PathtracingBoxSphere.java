@@ -38,13 +38,15 @@ public class PathtracingBoxSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify integrator to be used
-		integratorFactory = new PathTracingIntegratorFactory();
+		integratorFactory = new BDPathTracingIntegratorFactory();
 		
 		// List of objects
 		IntersectableList objects = new IntersectableList();	
 		
 		Sphere sphere = new Sphere(new Vector3f(-.5f,-.2f,1.f), .5f);
 		sphere.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
+//		sphere.material = new Reflective();
+
 		objects.add(sphere);
 
 		// Right, red wall

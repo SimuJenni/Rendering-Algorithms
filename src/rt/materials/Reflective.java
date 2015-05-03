@@ -27,7 +27,7 @@ public class Reflective implements Material {
 
 	@Override
 	public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
-		return new Spectrum(0,0,0);
+		return null;
 	}
 
 	@Override
@@ -56,8 +56,7 @@ public class Reflective implements Material {
 
 	@Override
 	public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample) {
-		// TODO Auto-generated method stub
-		return null;
+		return evaluateSpecularReflection(hitRecord);
 	}
 
 	@Override
@@ -69,7 +68,13 @@ public class Reflective implements Material {
 	@Override
 	public boolean castsShadows() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
+	}
+
+	@Override
+	public float getPobability(Vector3f sampleDir, Vector3f w, Vector3f normal) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
