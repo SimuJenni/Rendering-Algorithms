@@ -12,7 +12,7 @@ public class PathVertice {
 
 	public PathVertice(HitRecord hitRecord, Spectrum alpha, float G, float p_forw, float p_backw, int k) {
 		this.hitRecord=hitRecord;
-		this.alpha=alpha;
+		this.alpha=new Spectrum(alpha);
 		this.p_forw=p_forw;
 		this.p_backw=p_backw;
 		this.k=k;

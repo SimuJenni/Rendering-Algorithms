@@ -26,7 +26,11 @@ public class AreaLightMaterial implements Material {
 	}
 
 	public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
-		return new Spectrum(emission);
+		if(hitRecord.normal.dot(wOut)<0)
+			return new Spectrum(0);
+		Spectrum s = new Spectrum(emission);
+		s.mult((float) (1/(Math.PI*area)));
+		return s;
 	}
 
 	@Override
