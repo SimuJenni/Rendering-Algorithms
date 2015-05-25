@@ -47,8 +47,8 @@ public class Main {
 //	public static Scene scene = new spheresEverywhere();
 //	public static Scene scene = new AreaLight();
 //	public static Scene scene = new GlossySphere();
-	public static Scene scene = new PathtracingBoxSphere();
-//	public static Scene scene = new CornellBox();
+//	public static Scene scene = new PathtracingBoxSphere();
+	public static Scene scene = new CornellBox();
 
 
 	/**

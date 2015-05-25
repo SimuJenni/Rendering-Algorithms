@@ -58,7 +58,18 @@ public class Instance implements Intersectable {
 		w.normalize();
 		hit.w=new Vector3f(w);
 		
+		Vector3f t1=new Vector3f(hit.t1);
+		M.transform(t1);
+		t1.normalize();
+		hit.t1=new Vector3f(t1);
+		
+		Vector3f t2=new Vector3f(hit.t2);
+		M.transform(t2);
+		t2.normalize();
+		hit.t2=new Vector3f(t2);
+		
 		Vector3f normal=new Vector3f(hit.normal);
+
 		M_inv_transp.transform(normal);
 		normal.normalize();
 		hit.normal=new Vector3f(normal);

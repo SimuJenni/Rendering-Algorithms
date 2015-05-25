@@ -20,13 +20,12 @@ import rt.lightsources.RectangleLight;
 import rt.materials.AreaLightMaterial;
 import rt.samplers.RandomSampler;
 
-public class BDPathTracingIntegrator implements Integrator {
+public class CopyOfBDPathTracingIntegrator implements Integrator {
 	LightList lightList;
 	Intersectable root;
 	RandomSampler sampler;
-	final float delta=0.0001f;
 	
-	public BDPathTracingIntegrator(Scene scene)
+	public CopyOfBDPathTracingIntegrator(Scene scene)
 	{
 		this.lightList = scene.getLightList();
 		this.root = scene.getIntersectable();
@@ -42,49 +41,51 @@ public class BDPathTracingIntegrator implements Integrator {
 			return new Spectrum();
 		
 		ArrayList<PathVertice> lightPath=generateLightPath();
-				
+		
 		Spectrum outgoing=new Spectrum(0);
 		Spectrum c=new Spectrum(0);
 
+		float v_prod=1;
+		float v_sum=v_prod;	
+		float p_backL=1; //?? otherway around?
+		float p_backE=1;
 
 		for(PathVertice eyeVert : eyePath){
-			int t = eyeVert.k;
+			float u_prod=1;
+			float u_sum=u_prod;
+
+			v_prod*=eyeVert.p_backw/eyeVert.p_forw;
+			v_sum+=v_prod;
 			
 			c=eyeVert.hitRecord.material.evaluateEmission(eyeVert.hitRecord, eyeVert.hitRecord.w);
 			if(c!=null){
 				c.mult(eyeVert.alpha);
-				float w=computeWeightNoLight(t,eyePath,lightPath);
+				float w=1f/(1f+v_sum+u_sum);
 				c.mult(w);
 				outgoing.add(c);
-//				continue;
+				break;
 			}
 
 			for(PathVertice lightVert : lightPath){
 //				PathVertice lightVert=lightPath.get(0);
+				u_prod*=lightVert.p_backw/lightVert.p_forw;
+				u_sum+=u_prod;
 				int s = lightVert.k;
+				int t = eyeVert.k;
 				Vector3f dir=StaticVecmath.sub(lightVert.hitRecord.position, eyeVert.hitRecord.position);
 				float d2=dir.lengthSquared();
 				dir.normalize();
 				Ray visRay=new Ray(eyeVert.hitRecord.position, dir);
 				HitRecord visHit=root.intersect(visRay);
-				if(visHit==null||visHit.t<0.001||StaticVecmath.sub(eyeVert.hitRecord.position, visHit.position).lengthSquared()<d2-0.001)
+				if(visHit==null||visHit.t<0.001||StaticVecmath.sub(eyeVert.hitRecord.position, visHit.position).lengthSquared()<d2-0.0001)
 					continue;
-				
-				float cos_eye=eyeVert.hitRecord.normal.dot(dir);
-				float p_s=eyeVert.hitRecord.material.getPobability(eyeVert.hitRecord.w,dir,eyeVert.hitRecord.normal);
+				float cos_eye=Math.max(0, eyeVert.hitRecord.normal.dot(dir));
 				dir.negate();
-				float cos_light=lightVert.hitRecord.normal.dot(dir);
-				float p_t=lightVert.hitRecord.material.getPobability(lightVert.hitRecord.w,dir,lightVert.hitRecord.normal);
+				float cos_light=Math.max(0, lightVert.hitRecord.normal.dot(dir));
 
-				if(cos_eye<=delta||cos_light<=delta)
-					continue;
-				
 				float G = cos_eye*cos_light/d2;
-				p_t=p_t/cos_eye*G;
-				p_s=p_s/cos_light*G;
-
 				Spectrum brdf_light;
-				if(s==0)
+				if(s==1)
 					brdf_light=lightVert.hitRecord.material.evaluateEmission(lightVert.hitRecord, dir);
 				else
 					brdf_light=lightVert.hitRecord.material.evaluateBRDF(lightVert.hitRecord, lightVert.hitRecord.w, dir);
@@ -97,73 +98,29 @@ public class BDPathTracingIntegrator implements Integrator {
 				
 				c.mult(eyeVert.alpha);
 				c.mult(lightVert.alpha);
-				float w=computeWeight(s,t,eyePath,lightPath,p_s,p_t,G);
+				float w=1f/(1f+v_sum+u_sum);
 				c.mult(w);
 				outgoing.add(new Spectrum(c));
-			}		
+			}
+				
 		}
 		return outgoing;			
-
-	}
-	
-	private float computeWeightNoLight(int t, ArrayList<PathVertice> eyePath,
-			ArrayList<PathVertice> lightPath) {
-		float v_prod;
-		float p_t=lightPath.get(0).hitRecord.p;
-		if(t==1)
-			return 1.f;
-
-		v_prod=p_t/(eyePath.get(t-1).p_forw);
-		
-		float v_sum=v_prod;
-
-		for(int i=t-1;i>1;i--){
-			v_prod*=eyePath.get(i).p_backw/(eyePath.get(i-1).p_forw);
-			v_sum+=v_prod;
-		}
-		
-		return 1.f/(v_sum);
-	}
-
-
-	private float computeWeight(int s, int t, ArrayList<PathVertice> eyePath,
-			ArrayList<PathVertice> lightPath, float p_s, float p_t, float g) {
-		float u_prod;
-		u_prod=p_s/(lightPath.get(s).p_forw);
-
-		float v_prod;
-		v_prod=p_t/eyePath.get(t-1).p_forw;
-		
-		float u_sum=u_prod;
-		float v_sum=v_prod;
-		
-		for(int i=s;i>1;i--){
-			u_prod*=lightPath.get(i).p_backw/(lightPath.get(i-1).p_forw);
-			u_sum+=u_prod;
-		}
-
-		for(int i=t-1;i>1;i--){
-			v_prod*=eyePath.get(i).p_backw/(eyePath.get(i-1).p_forw);
-			v_sum+=v_prod;
-		}
-		
-		return 1.f/(v_sum+u_sum+1.f);
 	}
 
 
 	private ArrayList<PathVertice> generateLightPath() {
 		ArrayList<PathVertice> lightPath=new ArrayList<PathVertice>();
-		int s=0;
-		float p_forw = 1, p_backw = 1, q=0.5f;
+		int s=1;
+		float p_L = 1, p_Eprev = 1, q=0.5f;
 		float p=1, cos_in = 1, cos_out = 1, G=1;
-		Vector3f prevPos = null;
+		Vector3f newPos, prevPos = null;
 		Spectrum alpha_L=new Spectrum(1), brdf=new Spectrum(1);
 		Ray r = null;
 
 		while(russionRouletteStop(s)<q){
 			HitRecord hitRecord;
 			ShadingSample sample;
-			if(s==0){
+			if(s==1){
 				LightGeometry light=lightList.getRandomLight();
 				p=1.f/lightList.size();
 				float[][] samp=sampler.makeSamples(2, 2);
@@ -171,41 +128,46 @@ public class BDPathTracingIntegrator implements Integrator {
 				hitRecord.p*=p;
 				hitRecord.makeTangentFrame(hitRecord.normal);
 				sample=hitRecord.material.getEmissionSample(hitRecord, samp[1]);
-				p_forw=hitRecord.p;
-				p_backw=0;
-				alpha_L.mult(1.f/hitRecord.p);
-				brdf=sample.emission;
 			} else{
 				hitRecord = root.intersect(r);
 				if(hitRecord==null)
 					break;
 				float[][] samples=sampler.makeSamples(1, 2);
 				sample=hitRecord.material.getShadingSample(hitRecord, samples[0]);
-//				cos_in=Math.max(hitRecord.normal.dot(hitRecord.w), 0);
-				cos_in=Math.abs(hitRecord.normal.dot(hitRecord.w));
-				float d2=StaticVecmath.dist2(prevPos, hitRecord.position);
-				G=cos_out*cos_in/(d2);
-				p_forw=p/cos_out*G;  
-				p_backw=hitRecord.material.getPobability(sample.w,hitRecord.w,hitRecord.normal)/cos_in*G;
-				alpha_L.mult(brdf);
-				if(s==1)
-					alpha_L.mult(cos_out/(p));
-				else
-					alpha_L.mult(cos_out/(p*(1-q)));
-				brdf=sample.brdf;
+				cos_in=Math.max(hitRecord.normal.dot(hitRecord.w), 0);
 			}
 			
-			if(Float.isNaN(p_backw)||Float.isNaN(p_forw)||Float.isInfinite(p_backw)||Float.isInfinite(p_forw))
-				break;
-				
-			lightPath.add(new PathVertice(hitRecord, new Spectrum(alpha_L), G,p_forw, p_backw, s));
+			if(cos_in==0)
+				return lightPath;
+						
+			newPos = hitRecord.position;
 			
 			Vector3f sampleDir=new Vector3f(sample.w);
 			sampleDir.normalize();
-//			cos_out=Math.max(sampleDir.dot(hitRecord.normal), 0);
-			cos_out=Math.abs(sampleDir.dot(hitRecord.normal));		
+			
+			if(s>1){
+				float d2=StaticVecmath.dist2(prevPos, newPos);
+				G=cos_out*cos_in/(d2);
+				alpha_L.mult(brdf);
+				if(s==2)
+					alpha_L.mult(cos_out/(p));
+				else
+					alpha_L.mult(cos_out/(p*(1-q)));
+				p_L=p/cos_out*G;
+				p_Eprev=hitRecord.material.getPobability(sampleDir,hitRecord.w,hitRecord.normal)/cos_in*G;
+				brdf=sample.brdf;
+			}
+			if(s==1){
+				p_L=hitRecord.p;
+				p_Eprev=1;
+				alpha_L.mult(1.f/hitRecord.p);
+				brdf=sample.emission;
+			}
+			
+			cos_out=Math.max(sampleDir.dot(hitRecord.normal), 0);
 			p=sample.p;
 									
+			lightPath.add(new PathVertice(hitRecord, new Spectrum(alpha_L), G,p_L, p_Eprev, s));
 			r=new Ray(hitRecord.position, sampleDir);
 			prevPos=hitRecord.position;
 			s++;
@@ -227,10 +189,10 @@ public class BDPathTracingIntegrator implements Integrator {
 		float q=0.5f;
 		float G=1;
 		float cos_in = 1;
-		float p_forw = 1, p_backw = 1;
+		float p_E = 1, p_Lprev = 1;
 		Vector3f prevPos = r.origin, newPos;
 		
-		while(russionRouletteStop(t-1)<q){
+		while(russionRouletteStop(t)<q){
 			
 			HitRecord hitRecord = root.intersect(r);
 			
@@ -239,13 +201,15 @@ public class BDPathTracingIntegrator implements Integrator {
 						
 			newPos=hitRecord.position;
 			float d2=StaticVecmath.dist2(prevPos, newPos);
-//			cos_in=Math.max(hitRecord.normal.dot(hitRecord.w), 0);
-			cos_in=Math.abs(hitRecord.normal.dot(hitRecord.w));
+			cos_in=Math.max(hitRecord.normal.dot(hitRecord.w), 0);
+			
+			if(cos_in==0)
+				return eyePath;
 
 			float[][] samples=sampler.makeSamples(1, 2);
-			ShadingSample sample=hitRecord.material.getShadingSample(hitRecord, samples[0]);
+			ShadingSample s=hitRecord.material.getShadingSample(hitRecord, samples[0]);
 			
-			Vector3f sampleDir=new Vector3f(sample.w);
+			Vector3f sampleDir=new Vector3f(s.w);
 			sampleDir.normalize();
 			
 			if(t>1){
@@ -255,26 +219,20 @@ public class BDPathTracingIntegrator implements Integrator {
 					alpha_E.mult(cos_out/(p));
 				else
 					alpha_E.mult(cos_out/(p*(1-q)));
-				p_forw=p/cos_out*G;
-				p_backw=hitRecord.material.getPobability(sampleDir,hitRecord.w,hitRecord.normal)/cos_in*G;
+				p_E=p/cos_out*G;
+				p_Lprev=hitRecord.material.getPobability(sampleDir,hitRecord.w,hitRecord.normal)/cos_in*G;
 			}
 			if(t==1){
 				G=cos_in/d2;
-				hitRecord.p=cos_in/d2;
-				p_forw=hitRecord.p;
-				p_backw=hitRecord.material.getPobability(sampleDir,hitRecord.w,hitRecord.normal)/cos_in*G;
+				p_E=cos_in/StaticVecmath.dist2(r.origin,newPos);
+				p_Lprev=hitRecord.material.getPobability(sampleDir,hitRecord.w,hitRecord.normal)/cos_in*G;
 			}
 			
-			if(Float.isNaN(p_backw)||Float.isNaN(p_forw)||Float.isInfinite(p_backw)||Float.isInfinite(p_forw))
-				break;				
-			
-			brdf=sample.brdf;
-//			cos_out=Math.max(sampleDir.dot(hitRecord.normal), 0);
-			cos_out=Math.abs(sampleDir.dot(hitRecord.normal));
-
-			p=sample.p;
+			brdf=s.brdf;
+			cos_out=Math.max(sampleDir.dot(hitRecord.normal), 0);
+			p=s.p;
 									
-			eyePath.add(new PathVertice(hitRecord, new Spectrum(alpha_E), G,p_forw, p_backw, t));
+			eyePath.add(new PathVertice(hitRecord, new Spectrum(alpha_E), G,p_E, p_Lprev, t));
 			r=new Ray(hitRecord.position, sampleDir);
 			prevPos=hitRecord.position;
 			t++;
@@ -285,7 +243,7 @@ public class BDPathTracingIntegrator implements Integrator {
 
 
 	private float russionRouletteStop(int k) {
-		if(k<2)
+		if(k<3)
 			return 0;
 		else{
 			return (float) Math.random();

@@ -13,7 +13,7 @@ public class Cube implements Intersectable {
 
 	public Cube() {
 		float size = 2;
-		planes.add(new Rectangle(new Vector3f(1,1,1), new Vector3f(0,0,-size), new Vector3f(-size,0,0)));
+		planes.add(new Rectangle(new Vector3f(1,1,1), new Vector3f(0,0,-size), new Vector3f(-size,0,0))); //back
 		planes.add(new Rectangle(new Vector3f(1,1,1), new Vector3f(0,-size,0), new Vector3f(0,0,-size)));
 		planes.add(new Rectangle(new Vector3f(1,1,1), new Vector3f(-size,0, 0), new Vector3f(0,-size,0)));
 		
