@@ -38,13 +38,14 @@ public class PathtracingBoxSphere extends Scene {
 		tonemapper = new ClampTonemapper();
 		
 		// Specify integrator to be used
-		integratorFactory = new BDPathTracingIntegratorFactory();
+		integratorFactory = new BDPathTracingIntegratorFactory(this);
 		
 		// List of objects
 		IntersectableList objects = new IntersectableList();	
 		
-		Sphere sphere = new Sphere(new Vector3f(-.3f,-.3f,1.f), .5f);
+		Sphere sphere = new Sphere(new Vector3f(-.3f,-.1f,1.f), .5f);
 		sphere.material = new Diffuse(new Spectrum(1.f, 1.f, 1.f));
+		sphere.material = new Refractive(1.1f);
 //		sphere.material = new Reflective();
 
 		objects.add(sphere);
@@ -71,8 +72,8 @@ public class PathtracingBoxSphere extends Scene {
 		
 		// Light source
 		Vector3f bottomLeft = new Vector3f(.8f, 3.f, .8f);
-		Vector3f right = new Vector3f(0.f, 0.f, -1.f);
-		Vector3f top = new Vector3f(1.f, 0.f, 0.f);
+		Vector3f right = new Vector3f(0.f, 0.f, -.2f);
+		Vector3f top = new Vector3f(.2f, 0.f, 0.f);
 		RectangleLight rectangleLight = new RectangleLight(bottomLeft, right, top, new Spectrum(100.f, 100.f, 120.f));
 		objects.add(rectangleLight);
 		

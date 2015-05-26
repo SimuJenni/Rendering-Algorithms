@@ -1,5 +1,7 @@
 package rt;
 
+import rt.films.BoxFilterFilm;
+
 /**
  * A film stores a 2D grid of {@link rt.Spectrum} representing an image.
  * Rendered samples can be added one by one to a film. Samples are
@@ -37,5 +39,7 @@ public interface Film {
 	 * @return height in pixels
 	 */
 	public int getHeight();
+
+	public void addLightImage(BoxFilterFilm lightImage);
 
 }

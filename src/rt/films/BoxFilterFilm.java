@@ -67,4 +67,25 @@ public class BoxFilterFilm implements Film {
 		}
 		return image;
 	}
+	
+
+
+	@Override
+	public void addLightImage(BoxFilterFilm lightImage) {
+		Spectrum[][] img = lightImage.unnormalized;
+		float[][] nLightSamp = lightImage.nSamples;
+		
+		for(int i=0; i<width; i++)
+		{
+			for(int j=0; j<height; j++)
+			{
+				if(img[i][j]!=null){
+					unnormalized[i][j].add(img[i][j]);
+					nSamples[i][j] += nLightSamp[i][j];
+				}
+			}
+		}		
+	}
+
+	
 }

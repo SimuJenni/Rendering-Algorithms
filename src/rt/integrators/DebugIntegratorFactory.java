@@ -18,4 +18,10 @@ public class DebugIntegratorFactory implements IntegratorFactory {
 	{		
 	}
 
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -22,15 +22,15 @@ public class CornellBox extends Scene {
 		samplerFactory = new RandomSamplerFactory();
 		
 		// Samples per pixel
-		SPP = 128;
+		SPP = 32;
 		outputFilename = outputFilename + " " + String.format("%d", SPP) + "SPP";
 		
 		// Make camera and film
 		Vector3f eye = new Vector3f(278.f,273.f,-800.f);
 		Vector3f lookAt = new Vector3f(278.f,273.f,0.f);
 		Vector3f up = new Vector3f(0.f,1.f,0.f);
-		int width = 200;
-		int height = 200;
+		int width = 400;
+		int height = 400;
 		float fov = 40;
 
 		float aspect = (float)width/(float)height;
@@ -44,7 +44,7 @@ public class CornellBox extends Scene {
 		
 		// Specify integrator to be used
 		integratorFactory = new PathTracingIntegratorFactory();
-		integratorFactory = new BDPathTracingIntegratorFactory();
+		integratorFactory = new BDPathTracingIntegratorFactory(this);
 
 		
 		// List of objects
@@ -103,6 +103,8 @@ public class CornellBox extends Scene {
 		t.mul(trans, t);
 		Instance smallBox = new Instance(box, t);
 		smallBox.material = new Diffuse(new Spectrum(.5f));
+//		smallBox.material = new Reflective();
+//		smallBox.material = new Refractive(1.3f);
 
 		objects.add(smallBox);
 		
@@ -124,14 +126,16 @@ public class CornellBox extends Scene {
 		t.mul(trans, t);
 		Instance bigBox = new Instance(box, t);
 		bigBox.material = new Diffuse(new Spectrum(.5f));
+//		bigBox.material = new Refractive(1.3f);
+
 		objects.add(bigBox);
 		
 		// sphere
-		Sphere sphere = new Sphere(new Vector3f(185, 300.5f, 169), 70f);
+		Sphere sphere = new Sphere(new Vector3f(400, 80.5f, 100), 75f);
 		sphere.material = new Diffuse(new Spectrum(0.8f, 0.8f, 0.8f));
-//		sphere.material = new Reflective();
+		sphere.material = new Refractive(1.3f);
 
-//		objects.add(sphere);
+		objects.add(sphere);
 	
 		// Light source
 		Spectrum emission = new Spectrum(40, 35,30);
@@ -148,4 +152,12 @@ public class CornellBox extends Scene {
 		lightList.add(rectangleLight);
 	}
 	
+	public void finish()
+	{
+		if(integratorFactory instanceof BDPathTracingIntegratorFactory)
+		{
+			((BDPathTracingIntegratorFactory)integratorFactory).writeLightImage("../output/testscenes/lightimage");
+			((BDPathTracingIntegratorFactory)integratorFactory).addLightImage(film);
+		}
+	}
 }

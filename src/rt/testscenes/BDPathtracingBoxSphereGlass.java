@@ -29,8 +29,8 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		Vector3f lookAt = new Vector3f(0.f,1.f,0.f);
 		Vector3f up = new Vector3f(0.f,1.f,0.f);
 		float fov = 60.f;
-		int width = 128;
-		int height = 128;
+		int width = 300;
+		int height = 300;
 		float aspect = (float)width/(float)height;
 		camera = new PinholeCamera(eye, lookAt, up, fov, aspect, width, height);
 		film = new BoxFilterFilm(width, height);						
@@ -43,8 +43,10 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		// List of objects
 		IntersectableList objects = new IntersectableList();	
 		
-		Sphere sphere = new Sphere(new Vector3f(-.5f,-0.2f,1.f), .5f);
-		sphere.material = new Refractive(1.3f);
+		Sphere sphere = new Sphere(new Vector3f(-.4f,-0.2f,.8f), .5f);
+		sphere.material = new Refractive(1.4f);
+//		sphere.material = new Reflective();
+
 		objects.add(sphere);
 
 		// Right, red wall

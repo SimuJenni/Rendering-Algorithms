@@ -71,7 +71,7 @@ public class AreaLightMaterial implements Material {
 		float p=(float) (dir.dot(hitRecord.normal)/Math.PI);
 		Spectrum brdf=new Spectrum();
 	
-		return new ShadingSample(brdf,new Spectrum(0.f, 0.f, 0.f),dir,hasSpecularReflection(),p);
+		return new ShadingSample(brdf,evaluateEmission(hitRecord,dir),dir,hasSpecularReflection(),p);
 	}
 
 	@Override

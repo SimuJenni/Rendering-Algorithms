@@ -21,7 +21,7 @@ public class Refractive implements Material {
 	@Override
 	public Spectrum evaluateBRDF(HitRecord hitRecord, Vector3f wOut,
 			Vector3f wIn) {
-		return new Spectrum();
+		return ks;
 	}
 
 	@Override
@@ -38,11 +38,9 @@ public class Refractive implements Material {
 	@Override
 	public ShadingSample evaluateSpecularReflection(HitRecord hitRecord) {
 		float F=StaticVecmath.computeSchlick(hitRecord.w,hitRecord.normal,n);
-//		if(F<0.0001)
-//			return null;
 		Vector3f reflected=StaticVecmath.reflect(hitRecord.w,hitRecord.normal);
 		Spectrum reflSpectrum=new Spectrum(ks);
-		reflSpectrum.mult(F);
+//		reflSpectrum.mult(F);
 		ShadingSample s=new ShadingSample(reflSpectrum, new Spectrum(0,0,0), reflected, true, F);
 		return s;		
 	}
@@ -55,19 +53,20 @@ public class Refractive implements Material {
 	@Override
 	public ShadingSample evaluateSpecularRefraction(HitRecord hitRecord) {
 		float F=StaticVecmath.computeSchlick(hitRecord.w,hitRecord.normal,n);
-		if(F==1)
-			return null;
 		Vector3f refracted=StaticVecmath.refract(hitRecord.w,hitRecord.normal,n);
 		Spectrum reffSpectrum=new Spectrum(ks);
-		reffSpectrum.mult(1-F);
+//		reffSpectrum.mult(1-F);
 		ShadingSample s=new ShadingSample(reffSpectrum, new Spectrum(0,0,0), refracted, true, 1-F);
 		return s;
 	}
 
 	@Override
 	public ShadingSample getShadingSample(HitRecord hitRecord, float[] sample) {
-		// TODO Auto-generated method stub
-		return null;
+		float F=StaticVecmath.computeSchlick(hitRecord.w,hitRecord.normal,n);
+		if(F<sample[0])
+			return evaluateSpecularRefraction(hitRecord);
+		else
+			return evaluateSpecularReflection(hitRecord);
 	}
 
 	@Override
@@ -82,9 +81,15 @@ public class Refractive implements Material {
 	}
 
 	@Override
-	public float getPobability(Vector3f sampleDir, Vector3f w, Vector3f normal) {
+	public float getPobability(Vector3f d, Vector3f w, Vector3f normal) {
 		// TODO Auto-generated method stub
-		return 0;
+		float k = StaticVecmath.computeSchlick(w,normal,n);
+		float w_n = w.dot(normal);
+		float d_n = d.dot(normal);
+		if(w_n>0&&d_n>0||w_n<0&&d_n<0)
+			return k;
+		else
+			return 1-k;
 	}
 
 }

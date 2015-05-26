@@ -90,4 +90,16 @@ public class FixedCamera implements Camera {
 		return r;
 	}
 
+	@Override
+	public int[] getImagePos(Ray visRay) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector3f getLookAt() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

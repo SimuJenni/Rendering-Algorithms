@@ -13,7 +13,7 @@ public class PinholeCamera implements Camera{
 	private float aspect, vertFOV, t, r, b, l;
 	private int n, m;
 	private Vector3f w, u, v;
-	private Matrix4f mat;
+	private Matrix4f mat, mat_inv;
 
 	
 	public PinholeCamera(Vector3f eye, Vector3f lookAt, Vector3f up,
@@ -44,15 +44,13 @@ public class PinholeCamera implements Camera{
 		mat.setColumn(2, new Vector4f(w));
 		mat.setColumn(3, new Vector4f(eye));
 		mat.m33=1;
+		mat_inv=new Matrix4f(mat);
+		mat_inv.invert();
 	}
-
-
 
 
 	@Override
 	public Ray makeWorldSpaceRay(int i, int j, float[] sample) {
-//		float u=(float) l+(r-l)*(i+0.5f)/m;
-//		float v=(float) b+(t-b)*(j+0.5f)/n;
 		float u=(float) l+(r-l)*(i+sample[0])/m;
 		float v=(float) b+(t-b)*(j+sample[1])/n;
 
@@ -66,6 +64,24 @@ public class PinholeCamera implements Camera{
 		dir.sub(new Vector3f(s.x, s.y, s.z), eye);
 		Ray r = new Ray(new Vector3f(eye), dir);
 		return r;
+	}
+
+	@Override
+	public int[] getImagePos(Ray ray) {
+		// TODO Auto-generated method stub
+		Vector3f dir = ray.direction;
+		mat_inv.transform(dir);
+		dir.scale(1.f/dir.z);
+		float x = (dir.x-l)*m/(r-l);
+		float y = (dir.y-b)*n/(t-b);
+		int [] coord = {(int) (m-x), (int) (n-y)};
+		return coord;
+	}
+
+
+	@Override
+	public Vector3f getLookAt() {
+		return w;
 	}
 
 }

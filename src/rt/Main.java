@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 
 import rt.basicscenes.*;
 import rt.testscenes.AreaLight;
+import rt.testscenes.BDPathtracingBoxSphereGlass;
 import rt.testscenes.Blinn;
 import rt.testscenes.CSGScene;
 import rt.testscenes.CameraTestScene;
@@ -47,8 +48,9 @@ public class Main {
 //	public static Scene scene = new spheresEverywhere();
 //	public static Scene scene = new AreaLight();
 //	public static Scene scene = new GlossySphere();
-//	public static Scene scene = new PathtracingBoxSphere();
-	public static Scene scene = new CornellBox();
+	public static Scene scene = new PathtracingBoxSphere();
+//	public static Scene scene = new CornellBox();
+//	public static Scene scene = new BDPathtracingBoxSphereGlass();
 
 
 	/**
@@ -105,6 +107,7 @@ public class Main {
 	{			
 		int taskSize = 4;	// Each task renders a square image block of this size
 		int nThreads = Runtime.getRuntime().availableProcessors();	// Number of threads to be used for rendering
+//		int nThreads = 1;
 		int width = scene.getFilm().getWidth();
 		int height = scene.getFilm().getHeight();
 
@@ -142,6 +145,7 @@ public class Main {
 			}
 		}
 		System.out.println();
+		scene.getIntegratorFactory().finish();
 		
 		long time_ms = timer.timeElapsed();
 		long time_s = time_ms / 1000;
@@ -149,7 +153,7 @@ public class Main {
 		String timing_output = String.format("Image computed in %d ms = %d min, %d sec.\n", time_ms, time_min, time_s - time_min*60);
 		System.out.print(timing_output);
 		
-		// Tone map output image and writ to file
+		// Tone map output image and write to file
 		BufferedImage image = scene.getTonemapper().process(scene.getFilm());
 		try
 		{

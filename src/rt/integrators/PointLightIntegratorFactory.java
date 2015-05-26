@@ -17,4 +17,10 @@ public class PointLightIntegratorFactory implements IntegratorFactory {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
