@@ -17,6 +17,7 @@ public class Reflective implements Material {
 	
 	public Reflective(){
 		this.ks=new Spectrum(1,1,1);
+//		this.ks.mult((float) (1/Math.PI));
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class Reflective implements Material {
 	@Override
 	public float getPobability(Vector3f sampleDir, Vector3f w, Vector3f normal) {
 		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 }

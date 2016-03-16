@@ -81,6 +81,7 @@ public class Main {
 
 		@Override
 		public void run() {
+					
 			for(int j=bottom; j<top; j++)
 			{
 				for(int i=left; i<right; i++)
@@ -107,7 +108,6 @@ public class Main {
 	{			
 		int taskSize = 4;	// Each task renders a square image block of this size
 		int nThreads = Runtime.getRuntime().availableProcessors();	// Number of threads to be used for rendering
-//		int nThreads = 1;
 		int width = scene.getFilm().getWidth();
 		int height = scene.getFilm().getHeight();
 

@@ -79,7 +79,7 @@ public class HitRecord  {
 		// Make tangent frame: t1, t2, normal is a right handed frame
 		t1 = new Vector3f(1,0,0);
 		t1.cross(t1, normal);
-		if(t1.length()==0)
+		if(t1.length()<0.01)
 		{
 			t1 = new Vector3f(0,1,0);
 			t1.cross(t1, normal);
@@ -104,6 +104,10 @@ public class HitRecord  {
 		Vector3f dir = new Vector3f(this.w);
 		dir.normalize();
 		return dir;
+	}
+
+	public float getCosine() {
+		return normal.dot(getNormalizedDirection());
 	}
 	
 	

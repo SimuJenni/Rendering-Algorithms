@@ -16,7 +16,7 @@ public class AreaLightMaterial implements Material {
 	public AreaLightMaterial(Spectrum emission, float area) {
 		this.emission = new Spectrum(emission);
 		this.area=area;
-		emission.mult((float) (1/(Math.PI*area)));
+		this.emission.mult((float) (1/(Math.PI*area)));
 	}
 
 	@Override
@@ -28,9 +28,7 @@ public class AreaLightMaterial implements Material {
 	public Spectrum evaluateEmission(HitRecord hitRecord, Vector3f wOut) {
 		if(hitRecord.normal.dot(wOut)<0)
 			return new Spectrum(0);
-		Spectrum s = new Spectrum(emission);
-		s.mult((float) (1/(Math.PI*area)));
-		return s;
+		return new Spectrum(emission);
 	}
 
 	@Override
@@ -68,7 +66,7 @@ public class AreaLightMaterial implements Material {
 				(float)Math.sin(psi2)*psi1,(float)Math.sqrt(1-sample[0]));
 		dir=hitRecord.transformToTangentSpace(dir);
 		dir.normalize();
-		float p=(float) (dir.dot(hitRecord.normal)/Math.PI);
+		float p=(float) Math.abs((dir.dot(hitRecord.normal)/Math.PI));
 		Spectrum brdf=new Spectrum();
 	
 		return new ShadingSample(brdf,evaluateEmission(hitRecord,dir),dir,hasSpecularReflection(),p);
@@ -85,7 +83,7 @@ public class AreaLightMaterial implements Material {
 				(float)Math.sin(psi2)*psi1,(float)Math.sqrt(1-sample[0]));
 		dir=hitRecord.transformToTangentSpace(dir);
 		dir.normalize();
-		float p=(float) (dir.dot(hitRecord.normal)/Math.PI);
+		float p=(float) Math.abs((dir.dot(hitRecord.normal)/Math.PI));
 		Spectrum brdf=new Spectrum();
 	
 		return new ShadingSample(brdf,evaluateEmission(hitRecord,dir),dir,hasSpecularReflection(),p);

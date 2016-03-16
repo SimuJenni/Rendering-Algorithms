@@ -57,6 +57,7 @@ public class RectangleLight implements LightGeometry {
 		hitRecord.material = areaLightMaterial;
 		hitRecord.normal = rectangle.getNormal();
 		hitRecord.normal.normalize();
+		hitRecord.makeTangentFrame(hitRecord.normal);
 		hitRecord.p = 1.f/rectangle.getArea();
 		return hitRecord;
 	}

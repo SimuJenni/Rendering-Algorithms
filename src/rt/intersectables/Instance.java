@@ -15,6 +15,7 @@ public class Instance implements Intersectable {
 	private Intersectable object;
 	private Matrix4f M, M_inv, M_inv_transp;
 	public Material material;
+	private BoundingBox box;
 	
 	public Instance(Intersectable object, Matrix4f m) {
 		super();
@@ -24,7 +25,7 @@ public class Instance implements Intersectable {
 		this.M_inv.invert();
 		this.M_inv_transp=new Matrix4f(M_inv);
 		this.M_inv_transp.transpose();
-
+		this.box=object.getBoundingBox().getTransformedBox(M);
 	}
 
 	@Override
@@ -79,8 +80,7 @@ public class Instance implements Intersectable {
 
 	@Override
 	public BoundingBox getBoundingBox() {
-		BoundingBox box = object.getBoundingBox();
-		return box.getTransformedBox(M);
+		return box;
 	}
 
 }

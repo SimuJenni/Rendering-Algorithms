@@ -22,7 +22,7 @@ public class Ray {
 	private void shiftOriginInDir() {
 		Vector3f shiftedOrig=new Vector3f(this.direction);
 		shiftedOrig.normalize();
-		shiftedOrig.scaleAdd( 0.00001f, origin);
+		shiftedOrig.scaleAdd( (float) 1e-4, origin);
 		this.origin=shiftedOrig;
 	}
 }

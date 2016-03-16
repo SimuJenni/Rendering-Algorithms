@@ -40,7 +40,7 @@ public class PointLight implements LightGeometry {
 		HitRecord hitRecord = new HitRecord();
 		hitRecord.position = new Vector3f(position);
 		hitRecord.material = pointLightMaterial;
-		hitRecord.normal = null;
+		hitRecord.normal = new Vector3f(0,-1,0);
 		hitRecord.p = 1.f;
 		return hitRecord;
 	}

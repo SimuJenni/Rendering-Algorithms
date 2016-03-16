@@ -103,8 +103,8 @@ private ArrayList<HitRecord> addHitpoint(Ray r, ArrayList<HitRecord> hits, float
 
 @Override
 public BoundingBox getBoundingBox() {
-	return new BoundingBox(center.x-radius/2,center.y-radius/2,center.z-radius/2,
-			center.x+radius/2,center.y+radius/2,center.z+radius/2);
+	return new BoundingBox(center.x-radius,center.y-radius,center.z-radius,
+			center.x+radius,center.y+radius,center.z+radius);
 }
 
 

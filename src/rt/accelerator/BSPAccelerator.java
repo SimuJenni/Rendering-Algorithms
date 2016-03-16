@@ -57,7 +57,7 @@ public class BSPAccelerator implements Intersectable {
 				if(tsplit>tmax||tsplit<0||(tsplit==0&&node.splitPlane.pointsBelow(d))){
 					node=first;
 				} else
-				if(tsplit<tmin||(tsplit==0&&!node.splitPlane.pointsBelow(d))){
+				if(tsplit<tmin||(tsplit==0&&!node.splitPlane.pointsAbove(d))){
 					node=second;
 				} else{
 					node=first;
@@ -163,6 +163,11 @@ public class BSPAccelerator implements Intersectable {
 	}
 
 	public class SplitPlane {
+		@Override
+		public String toString() {
+			return "[axis=" + axis + ", distance=" + distance + "]";
+		}
+
 		Axis axis;
 		float distance;
 		
@@ -172,6 +177,12 @@ public class BSPAccelerator implements Intersectable {
 			this.distance = distance;
 		}
 		
+		public boolean pointsAbove(Vector3f d) {
+			Vector3f dneg = new Vector3f(d);
+			dneg.negate();
+			return pointsBelow(dneg);
+		}
+
 		public boolean pointsBelow(Vector3f d) {
 			boolean result=false;
 			switch(axis){

@@ -66,6 +66,7 @@ public class StaticVecmath {
 		t.scale(n1/n2);
 		normal.scale((float) (n1/n2*cosTheta_i-Math.sqrt(1-sin2theta_t)));
 		t.add(normal);
+		t.normalize();
 		return t;
 	}
 
@@ -99,4 +100,7 @@ public class StaticVecmath {
 		else
 			return (float) (r0+(1-r0)*Math.pow(1-cosTheta_t, 5));
 	}
+	
+
+	
 }

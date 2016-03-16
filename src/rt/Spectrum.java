@@ -5,7 +5,13 @@ package rt;
  */
 public class Spectrum {
 
+	@Override
+	public String toString() {
+		return "Spectrum [r=" + r + ", g=" + g + ", b=" + b + "]";
+	}
+
 	public float r, g, b;
+	private float max = Float.MAX_VALUE;
 	
 	public Spectrum()
 	{
@@ -92,6 +98,26 @@ public class Spectrum {
 		r = r+s;
 		g = g+s;
 		b = b+s;		
+	}
+
+	public void nonNeg() {
+//		assert(!Float.isNaN(r));
+//		assert(!Float.isNaN(g));
+//		assert(!Float.isNaN(b));
+//		assert(r>=0||g>=0||b>=0);
+
+		if(r==Float.NaN)
+			r=0;
+		if(b==Float.NaN)
+			b=0;
+		if(g==Float.NaN)
+			g=0;
+		r = Math.max(r, 0);
+		b = Math.max(b, 0);	
+		g = Math.max(g, 0);	
+//		r = Math.min(r, max);
+//		b = Math.min(b, max);	
+//		g = Math.min(g, max);	
 	}
 	
 }

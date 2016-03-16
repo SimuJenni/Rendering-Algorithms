@@ -6,6 +6,11 @@ import rt.*;
 
 public class IntersectableList extends Aggregate {
 
+	@Override
+	public String toString() {
+		return "[size=" + list.size() + "]";
+	}
+
 	public LinkedList<Intersectable> list;
 	
 	public IntersectableList()

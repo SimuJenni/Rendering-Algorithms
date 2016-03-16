@@ -44,7 +44,7 @@ public class BDPathtracingBoxSphereGlass extends Scene {
 		IntersectableList objects = new IntersectableList();	
 		
 		Sphere sphere = new Sphere(new Vector3f(-.4f,-0.2f,.8f), .5f);
-		sphere.material = new Refractive(1.4f);
+		sphere.material = new Refractive(1.1f);
 //		sphere.material = new Reflective();
 
 		objects.add(sphere);

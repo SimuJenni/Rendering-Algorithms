@@ -33,6 +33,12 @@ public class Rectangle implements Intersectable {
 		material=new Diffuse();
 	}
 
+	@Override
+	public String toString() {
+		return "[bottomLeft=" + bottomLeft.toString() + ", right=" + right.toString()
+				+ ", top=" + top.toString() + "]";
+	}
+
 	public Rectangle(Point3f point1, Point3f point2, Point3f point3) {
 		this(new Vector3f(point1), StaticVecmath.sub(point2, point1), StaticVecmath.sub(point3, point1));
 	}
@@ -43,14 +49,14 @@ public class Rectangle implements Intersectable {
 		if(hit==null)
 			return null;
 		hit.material=this.material;
-		if(isOnRectangle(hit.position))
+		if(isOnRectangle(hit))
 			return hit;
 		else
 			return null;
 	}
 
-	private boolean isOnRectangle(Vector3f position) {
-		Vector3f sample=new Vector3f(position);
+	private boolean isOnRectangle(HitRecord hit) {
+		Vector3f sample=new Vector3f(hit.position);
 		sample.sub(this.bottomLeft);
 		Vector3f widthVec=new Vector3f(right);
 		Vector3f heightVec=new Vector3f(top);
@@ -58,9 +64,9 @@ public class Rectangle implements Intersectable {
 		float height=this.top.length();
 		widthVec.normalize();
 		heightVec.normalize();
-		float projectedWidth=sample.dot(widthVec);
-		float projectedHeight=sample.dot(heightVec);
-		if(projectedWidth<0||projectedHeight<0||projectedWidth>width||projectedHeight>height)
+		hit.u=sample.dot(widthVec)/width;
+		hit.v=sample.dot(heightVec)/height;
+		if(hit.u<0||hit.v<0||hit.u>1||hit.v>1)
 			return false;
 		else
 			return true;
@@ -76,15 +82,23 @@ public class Rectangle implements Intersectable {
 		topLeft.add(top);
 		bottomRight.add(right);
 		float xmin=Math.min(bottomLeft.x, topLeft.x);
-		float zmin=Math.min(bottomLeft.z, bottomRight.z);
 		float ymin=Math.min(bottomLeft.y, topLeft.y);
+		float zmin=Math.min(bottomLeft.z, topLeft.z);
+		xmin=Math.min(xmin, bottomRight.x);
+		xmin=Math.min(xmin, topRight.x);
 		ymin=Math.min(ymin, bottomRight.y);
 		ymin=Math.min(ymin, topRight.y);
-		float xmax=Math.max(bottomRight.x, topRight.x);
-		float zmax=Math.max(topLeft.z, topRight.z);
+		zmin=Math.min(zmin, bottomRight.z);
+		zmin=Math.min(zmin, topRight.z);
+		float xmax=Math.max(bottomLeft.x, topLeft.x);
 		float ymax=Math.max(bottomLeft.y, topLeft.y);
+		float zmax=Math.max(bottomLeft.z, topLeft.z);
+		xmax=Math.max(xmax, bottomRight.x);
+		xmax=Math.max(xmax, topRight.x);
 		ymax=Math.max(ymax, bottomRight.y);
 		ymax=Math.max(ymax, topRight.y);
+		zmax=Math.max(zmax, bottomRight.z);
+		zmax=Math.max(zmax, topRight.z);
 		return new BoundingBox(xmin,ymin,zmin,xmax,ymax,zmax);
 	}
 

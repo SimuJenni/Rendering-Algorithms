@@ -89,8 +89,7 @@ public class PointLightMaterial implements Material {
 
 	@Override
 	public float getPobability(Vector3f sampleDir, Vector3f w, Vector3f normal) {
-		// TODO Auto-generated method stub
-		return 0;
+		return (float) (1/(4*Math.PI));
 	}
 
 
